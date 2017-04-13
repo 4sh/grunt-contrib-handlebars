@@ -187,12 +187,16 @@ module.exports = function(grunt) {
 
         if (options.amd) {
           // Wrap the file in an AMD define fn.
+          var moduleDef = '';
+          if(options.amdModuleName) {
+              moduleDef = '\''+options.amdModuleName(f.dest)+'\', ';
+          }
           if (typeof options.amd === 'boolean') {
-            output.unshift('define([\'handlebars\'], function(Handlebars) {');
+            output.unshift('define('+moduleDef+'[\'handlebars\'], function(Handlebars) {');
           } else if (typeof options.amd === 'string') {
-            output.unshift('define([\'' + options.amd + '\'], function(Handlebars) {');
+            output.unshift('define('+moduleDef+'[\'' + options.amd + '\'], function(Handlebars) {');
           } else if (typeof options.amd === 'function') {
-            output.unshift('define([\'' + options.amd(filename, ast, compiled) + '\'], function(Handlebars) {');
+            output.unshift('define('+moduleDef+'[\'' + options.amd(filename, ast, compiled) + '\'], function(Handlebars) {');
           } else if (Array.isArray(options.amd)) {
             // convert options.amd to a string of dependencies for require([...])
             var amdString = '';
@@ -205,7 +209,7 @@ module.exports = function(grunt) {
             }
 
             // Wrap the file in an AMD define fn.
-            output.unshift('define([' + amdString + '], function(Handlebars) {');
+            output.unshift('define('+moduleDef+'[' + amdString + '], function(Handlebars) {');
           }
 
           if (useNamespace) {
